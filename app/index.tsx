@@ -1,14 +1,18 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { FlatList, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import { Button, ButtonText } from '@/components/ui/button'
+import product from '@/assets/product.json'
+import ProductListItem from '@/components/ProductListItem'
 
 const HomeScreen = () => {
   return (
     <View>
-      <Text>HomeScreen</Text>
-      <Button>
-        <ButtonText>Button</ButtonText>
-      </Button>
+      <FlatList
+        data={product}
+        numColumns={2}
+        contentContainerClassName='gap-2'
+        columnWrapperClassName='gap-2'
+        renderItem={({ item }) => <ProductListItem product={item} />}
+      />
     </View>
   )
 }
