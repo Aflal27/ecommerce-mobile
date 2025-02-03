@@ -1,13 +1,13 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import product from '@/assets/product.json'
+import products from '@/assets/products.json'
 import ProductListItem from '@/components/ProductListItem'
 
 const HomeScreen = () => {
   return (
     <View>
       <FlatList
-        data={product}
+        data={products}
         numColumns={2}
         contentContainerClassName='gap-2'
         columnWrapperClassName='gap-2'
