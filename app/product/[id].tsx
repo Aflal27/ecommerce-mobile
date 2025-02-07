@@ -1,6 +1,6 @@
 import { Stack, useLocalSearchParams } from 'expo-router'
-import { View } from 'react-native'
-import products from '@/assets/products.json'
+import { ActivityIndicator, View } from 'react-native'
+
 import { Box } from '@/components/ui/box'
 import { Button, ButtonText } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -8,10 +8,38 @@ import { Heading } from '@/components/ui/heading'
 import { Image } from '@/components/ui/image'
 import { Text } from '@/components/ui/text'
 import { VStack } from '@/components/ui/vstack'
+import { useQuery } from '@tanstack/react-query'
+import { fetchProductByID } from '@/api/products'
+import { useCart } from '@/store/cartStore'
 
 export default function ProductDetails() {
-  const { id } = useLocalSearchParams()
-  const product = products.find((p) => p.id === Number(id))
+  const { id } = useLocalSearchParams<{ id: string }>()
+  const addProduct = useCart((state) => state.addToCart)
+
+  const addToCart = () => {
+    addProduct(product)
+  }
+
+  const {
+    data: product,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['products', id],
+    queryFn: () => fetchProductByID(Number(id)),
+  })
+
+  if (isLoading) {
+    return <ActivityIndicator />
+  }
+
+  if (error) {
+    return (
+      <View>
+        <Text>{error.message || 'Something went wrong with the request'}</Text>
+      </View>
+    )
+  }
 
   return (
     <View>
@@ -36,7 +64,10 @@ export default function ProductDetails() {
           <Text size='sm'>{product?.description}</Text>
         </VStack>
         <Box className='flex-col sm:flex-row'>
-          <Button className='px-4 py-2 mr-0 mb-3 sm:mr-3 sm:mb-0 sm:flex-1'>
+          <Button
+            onPress={addToCart}
+            className='px-4 py-2 mr-0 mb-3 sm:mr-3 sm:mb-0 sm:flex-1'
+          >
             <ButtonText size='sm'>Add to cart</ButtonText>
           </Button>
           <Button

@@ -1,9 +1,37 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native'
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
+} from 'react-native'
 import React from 'react'
-import products from '@/assets/products.json'
 import ProductListItem from '@/components/ProductListItem'
-
+import { listProducts } from '@/api/products'
+import { useQuery } from '@tanstack/react-query'
+ 
 const HomeScreen = () => {
+  const {
+    data: products,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['products'],
+    queryFn: listProducts,
+  })
+
+  if (isLoading) {
+    return <ActivityIndicator />
+  }
+
+  if (error) {
+    return (
+      <Text>
+        Error: {error.message || 'Something went wrong with the request'}
+      </Text>
+    )
+  }
+
   return (
     <View>
       <FlatList
