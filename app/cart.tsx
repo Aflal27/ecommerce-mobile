@@ -5,15 +5,36 @@ import { HStack } from '@/components/ui/hstack'
 import { VStack } from '@/components/ui/vstack'
 import { Button, ButtonText } from '@/components/ui/button'
 import { Redirect } from 'expo-router'
+import { useMutation } from '@tanstack/react-query'
+import { createOrder } from '@/api/orders'
+import { useAuth } from '@/store/authStore'
 // import { Text } from '@/components/ui/text'
 
 const cart = () => {
   const items = useCart((state) => state.items)
   const resetCart = useCart((state) => state.resetCart)
-  console.log(items)
+  const { token } = useAuth()
+
+  const createOrderMutation = useMutation({
+    mutationFn: () =>
+      createOrder(
+        items.map((item) => ({
+          productId: item.product.id,
+          quentity: item.quentity,
+          price: item.product.price,
+        })),
+        token
+      ),
+    onSuccess: (data) => {
+      resetCart()
+    },
+    onError: (error) => {
+      console.log(error)
+    },
+  })
 
   const onCheckout = () => {
-    resetCart()
+    createOrderMutation.mutate()
   }
 
   if (items.length === 0) {
